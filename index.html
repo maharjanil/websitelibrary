@@ -13,17 +13,16 @@
       margin: 0;
       font-family: 'Segoe UI', system-ui, sans-serif;
       overflow-x: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      padding: 2rem 1rem;
     }
     .search-card {
       background: white;
       border-radius: 16px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
       padding: 2rem;
-      max-width: 700px;
-      width: 90%;
+      max-width: 800px;
+      width: 100%;
+      margin-bottom: 2rem;
     }
     h1 {
       font-weight: 600;
@@ -57,36 +56,44 @@
     #clearBtn:hover {
       color: #6c757d;
     }
-    .results-list {
-      margin-top: 1.5rem;
-      max-height: 300px;
-      overflow-y: auto;
-      padding-right: 4px;
+    .website-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      max-width: 800px;
+      margin: 0 auto;
     }
-    .result-item {
-      padding: 0.85rem;
-      border-radius: 10px;
-      margin-bottom: 0.6rem;
-      background: #f8f9ff;
-      cursor: pointer;
-      transition: all 0.2s ease;
+    .website-card {
+      background: #ffffff;
       border: 1px solid #e9ecef;
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .result-item:hover {
-      background: #edf2ff;
+    .website-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       border-color: #cbd5ff;
     }
-    .result-source {
-      font-size: 0.82rem;
-      color: #6c757d;
-      margin-top: 0.25rem;
+    .website-card h5 {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
     }
-    .no-results {
-      display: none;
+    .website-card .url {
+      font-size: 0.85rem;
+      color: #6c757d;
+      word-break: break-all;
+    }
+    .no-results-placeholder {
       text-align: center;
-      margin-top: 1.5rem;
       color: #e74c3c;
       font-style: italic;
+      padding: 2rem;
+      grid-column: 1 / -1;
+      display: none;
     }
     .footer-note {
       text-align: center;
@@ -111,17 +118,18 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-
-    <div id="resultsContainer" class="results-list" style="display: none;"></div>
-    <div id="noResults" class="no-results"></div>
-
     <div class="footer-note">
-      Click a result to open the website in a new tab.
+      Click a card to open the website in a new tab.
     </div>
   </div>
 
+  <div class="website-grid" id="websiteGrid">
+    <!-- Cards will be inserted here by JavaScript -->
+    <div class="no-results-placeholder" id="noResults">No websites match your search.</div>
+  </div>
+
   <script>
-    // 🌐 List of websites
+    // 🌐 List of websites (cleaned URLs)
     const websites = [
       { title: "Ratopati | Online News", url: "https://www.ratopati.com/" },
       { title: "Setopati | Online News", url: "https://www.setopati.com/" },
@@ -143,7 +151,7 @@
       { title: "Recurring Deposit Calculator", url: "https://www.laxmisunrise.com/deposit/recurring-deposit/" },
       { title: "Foreign Exchange Rate | Forex", url: "https://www.nrb.org.np/forex/" },
       { title: "Meroshare", url: "https://meroshare.cdsc.com.np/#/login" },
-      { title: "Share | Stock | IPO " , url: "https://www.sharesansar.com/existing-issues" },
+      { title: "Share | Stock | IPO", url: "https://www.sharesansar.com/existing-issues" },
       { title: "Nepali Patro | Calendar | Hamropatro", url: "https://www.hamropatro.com/" },
       { title: "NEA Bill Check", url: "https://www.neabilling.com/viewonline/" },
       { title: "KUKL Bill Online Payment", url: "https://kathmanduwater.org/index.php/online-payment/" },
@@ -156,13 +164,13 @@
       { title: "Chatgpt | AI", url: "https://chatgpt.com/" },
       { title: "Currency Converter", url: "https://logwork.com/free-currency-converter-calculator" },
       { title: "Dropbox", url: "https://www.dropbox.com" },
-      { title: "Nepali Utility Calculators", url: "https://barala.com.np/calculators/"},
+      { title: "Nepali Utility Calculators", url: "https://barala.com.np/calculators/" },
       { title: "Nepali Land Area Converter", url: "https://barala.com.np/calculators/jagga-napi/" },
-      { title: "Nepali Unicode", url: "https://barala.com.np/nepali-typography/nepali-unicode/"},
+      { title: "Nepali Unicode", url: "https://barala.com.np/nepali-typography/nepali-unicode/" },
       { title: "Typeshala", url: "https://barala.com.np/nepali-typography/typeshala/" },
-      { title: "IDM Activation Script | {iex (irm is.gd/IDMFIX)}", url: "https://github.com/Blindsinner/IDM-ACTIVATION-SCRIPT" },
+      { title: "IDM Activation Script", url: "https://github.com/Blindsinner/IDM-ACTIVATION-SCRIPT" },
       { title: "Asan Bazaar Photos", url: "https://www.ratopati.com/story/526209/gulzar-asan-bazaar-since-morning-photos" },
-      { title: "Beluki Chadai Khanuko Faida | Setopati | Article", url: "https://www.setopati.com/social/375585" },
+      { title: "Beluki Chadai Khanuko Faida | Setopati", url: "https://www.setopati.com/social/375585" },
       { title: "Nepal Premier League | NPL | Ratopati", url: "https://www.ratopati.com/cricket/nepal-premier-league-2025" },
       { title: "Nagarik Lagani Kosh | CIT | Pension Scheme", url: "https://www.nlk.org.np/citizen-pension-scheme" },
       { title: "Nagarik Lagani Kosh | CIT | Account Opening Form", url: "https://eservice.nlk.org.np/Portal/SchemeAccountOpeningKycMaster/Create" },
@@ -177,83 +185,87 @@
     // DOM Elements
     const searchBox = document.getElementById('searchBox');
     const clearBtn = document.getElementById('clearBtn');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const noResults = document.getElementById('noResults');
+    const websiteGrid = document.getElementById('websiteGrid');
+    const noResultsEl = document.getElementById('noResults');
+
+    // Generate all cards on page load
+    function renderAllCards() {
+      websiteGrid.innerHTML = '';
+      websites.forEach(site => {
+        const card = document.createElement('div');
+        card.className = 'website-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.innerHTML = `
+          <h5>${site.title}</h5>
+          <div class="url">${site.url}</div>
+        `;
+        card.addEventListener('click', () => {
+          window.open(site.url, '_blank', 'noopener,noreferrer');
+        });
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            window.open(site.url, '_blank', 'noopener,noreferrer');
+          }
+        });
+        websiteGrid.appendChild(card);
+      });
+      noResultsEl.style.display = 'none';
+    }
+
+    // Filter cards based on search query
+    function filterCards() {
+      const query = searchBox.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      Array.from(websiteGrid.children).forEach(child => {
+        if (child === noResultsEl) return;
+        const title = child.querySelector('h5').textContent.toLowerCase();
+        if (title.includes(query)) {
+          child.style.display = 'block';
+          visibleCount++;
+        } else {
+          child.style.display = 'none';
+        }
+      });
+
+      noResultsEl.style.display = visibleCount === 0 && query ? 'block' : 'none';
+    }
 
     // Clear search
     function clearSearch() {
       searchBox.value = '';
-      resultsContainer.style.display = 'none';
-      noResults.style.display = 'none';
       clearBtn.style.display = 'none';
+      renderAllCards(); // or just call filterCards() since query is empty
       searchBox.focus();
     }
 
-    // Search handler
-    function performSearch() {
-      const query = searchBox.value.trim().toLowerCase();
-      if (!query) {
-        resultsContainer.style.display = 'none';
-        noResults.style.display = 'none';
-        return;
-      }
-
-      const matches = websites.filter(site =>
-        site.title.toLowerCase().includes(query)
-      );
-
-      if (matches.length === 0) {
-        noResults.textContent = 'No websites found.';
-        noResults.style.display = 'block';
-        resultsContainer.style.display = 'none';
-      } else {
-        noResults.style.display = 'none';
-        resultsContainer.innerHTML = '';
-        matches.forEach(site => {
-          const div = document.createElement('div');
-          div.className = 'result-item';
-          div.setAttribute('role', 'button');
-          div.setAttribute('tabindex', '0');
-          div.innerHTML = `
-            <strong>${site.title}</strong>
-            <div class="result-source">${site.url}</div>
-          `;
-          div.addEventListener('click', () => {
-            window.open(site.url, '_blank', 'noopener,noreferrer');
-          });
-          div.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              window.open(site.url, '_blank', 'noopener,noreferrer');
-            }
-          });
-          resultsContainer.appendChild(div);
-        });
-        resultsContainer.style.display = 'block';
-      }
-    }
+    // Initialize
+    renderAllCards();
 
     // Event Listeners
     clearBtn.addEventListener('click', clearSearch);
 
     searchBox.addEventListener('input', () => {
       clearBtn.style.display = searchBox.value.trim() ? 'block' : 'none';
-      performSearch();
+      filterCards();
     });
 
+    // Optional: Enter key opens first visible link
     searchBox.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
-        const matches = websites.filter(site =>
-          site.title.toLowerCase().includes(searchBox.value.trim().toLowerCase())
-        );
-        if (matches.length > 0) {
-          window.open(matches[0].url, '_blank', 'noopener,noreferrer');
-          clearSearch(); // optional: clear after opening
+        const firstVisible = websiteGrid.querySelector('.website-card:not([style*="display: none"])');
+        if (firstVisible) {
+          const title = firstVisible.querySelector('h5').textContent;
+          const site = websites.find(s => s.title === title);
+          if (site) {
+            window.open(site.url, '_blank', 'noopener,noreferrer');
+            clearSearch();
+          }
         }
       }
     });
-
-    // Accessibility: support Enter/Space on result items (already added above)
   </script>
 </body>
 </html>
